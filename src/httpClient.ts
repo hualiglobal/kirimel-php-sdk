@@ -1,7 +1,7 @@
 /**
  * HTTP Client for KiriMel API
  */
-import fetch, { RequestInit, Response } from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import {
   ApiException,
   AuthenticationException,
@@ -15,6 +15,13 @@ export interface HttpClientConfig {
   timeout?: number;
   retries?: number;
   logger?: Logger;
+}
+
+interface RequestOptions {
+  method: string;
+  headers: Record<string, string>;
+  body?: string;
+  timeout?: number;
 }
 
 export interface Logger {
@@ -32,7 +39,7 @@ export class HttpClient {
   private logger?: Logger;
 
   constructor(config: HttpClientConfig = {}) {
-    this.baseUrl = (config.baseUrl || 'https://api.kirimel.com/v2').replace(/\/$/, '');
+    this.baseUrl = (config.baseUrl || 'https://kirimel.com').replace(/\/$/, '');
     this.apiKey = config.apiKey || process.env.KIRIMEL_API_KEY;
     this.timeout = config.timeout || 30000;
     this.retries = config.retries || 3;
@@ -86,7 +93,7 @@ export class HttpClient {
     this.log('debug', `Making ${method} request to ${url}`, { attempt: attempt + 1 });
 
     const headers = this.buildHeaders();
-    const options: RequestInit = {
+    const options: RequestOptions = {
       method,
       headers,
       timeout: this.timeout,
@@ -97,10 +104,10 @@ export class HttpClient {
     }
 
     try {
-      const response: Response = await fetch(url, options);
+      const response: Response = await fetch(url, options as any);
 
       if (response.status >= 400) {
-        await this.handleError(response, url, attempt);
+        await this.handleError(response, attempt);
       }
 
       return await response.json();
@@ -129,13 +136,13 @@ export class HttpClient {
     return headers;
   }
 
-  private async handleError(response: Response, url: string, attempt: number): Promise<void> {
+  private async handleError(response: Response, attempt: number): Promise<void> {
     let message = 'API request failed';
     let errors: any;
     let retryAfter: number | undefined;
 
     try {
-      const data = await response.json();
+      const data: any = await response.json();
       message = data.message || message;
       errors = data.errors;
       retryAfter = data.retry_after;

@@ -1,5 +1,5 @@
 {
-  "name": "@kirimel/node-sdk",
+  "name": "@hualiglobal/kirimel-node-sdk",
   "version": "0.1.0",
   "description": "Official KiriMel Node.js SDK",
   "main": "dist/index.js",

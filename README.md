@@ -5,18 +5,18 @@ Official Node.js SDK for KiriMel Email Marketing API.
 ## Installation
 
 ```bash
-npm install @kirimel/node-sdk
+npm install @hualiglobal/kirimel-node-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { Client } from '@kirimel/node-sdk';
+import { Client } from '@hualiglobal/kirimel-node-sdk';
 
 // Initialize the client
 const client = new Client({
   apiKey: 'sk_test_xxx', // Or set KIRIMEL_API_KEY env variable
-  baseUrl: 'https://api.kirimel.com/v2',
+  baseUrl: 'https://kirimel.com',
   timeout: 30000,
   retries: 3
 });
@@ -476,5 +476,6 @@ MIT License
 ## Support
 
 - Documentation: https://docs.kirimel.com
-- GitHub: https://github.com/kirimel/kirimel-node-sdk
-- Issues: https://github.com/kirimel/kirimel-node-sdk/issues
+- GitHub: https://github.com/hualiglobal/kirimel-node-sdk
+- npm: https://www.npmjs.com/package/@hualiglobal/kirimel-node-sdk
+- Issues: https://github.com/hualiglobal/kirimel-node-sdk/issues
