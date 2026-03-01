@@ -38,5 +38,10 @@
             "email": "support@kirimel.com"
         }
     ],
-    "homepage": "https://github.com/kirimel/kirimel-php-sdk"
+    "homepage": "https://kirimel.com",
+    "support": {
+        "issues": "https://github.com/hualiglobal/kirimel-php-sdk/issues",
+        "source": "https://github.com/hualiglobal/kirimel-php-sdk",
+        "docs": "https://docs.kirimel.com"
+    }
 }
