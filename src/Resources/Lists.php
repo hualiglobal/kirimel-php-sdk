@@ -55,7 +55,7 @@ class Lists
      */
     public function delete(int $id): array
     {
-        return $this->httpClient->post("lists/{$id}/delete");
+        return $this->httpClient->delete("lists/{$id}");
     }
 
     /**

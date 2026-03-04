@@ -27,6 +27,14 @@ class Subscribers
     }
 
     /**
+     * List all subscribers (newly added)
+     */
+    public function list_all(array $params = []): array
+    {
+        return $this->httpClient->get("subscribers", $params);
+    }
+
+    /**
      * Get single subscriber
      */
     public function get(int $id): array
@@ -37,9 +45,9 @@ class Subscribers
     /**
      * Add subscriber to a list
      */
-    public function create(int $listId, array $data): array
+    public function create(array $data): array
     {
-        return $this->httpClient->post("lists/{$listId}/subscribers", $data);
+        return $this->httpClient->post("subscribers", $data);
     }
 
     /**
@@ -55,7 +63,7 @@ class Subscribers
      */
     public function delete(int $id): array
     {
-        return $this->httpClient->post("subscribers/{$id}/delete");
+        return $this->httpClient->delete("subscribers/{$id}");
     }
 
     /**
