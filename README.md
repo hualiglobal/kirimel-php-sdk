@@ -438,6 +438,57 @@ $nodeTypes = $client->workflows->nodeTypes();
 $data = $client->workflows->getData($id);
 ```
 
+### Email (Transactional)
+
+Send transactional emails with attachment support:
+
+```php
+// Send transactional email
+$result = $client->email()->send([
+    'to' => 'user@example.com',
+    'subject' => 'Welcome to our service!',
+    'html' => '<h1>Welcome!</h1><p>Thanks for signing up.</p>',
+    'text' => 'Welcome! Thanks for signing up.',
+    'from_name' => 'My App',
+    'reply_to' => 'support@example.com',
+    'cc' => 'cc@example.com',
+    'bcc' => ['bcc1@example.com', 'bcc2@example.com'],
+    'attachments' => [
+        [
+            'name' => 'invoice.pdf',
+            'content' => base64_encode(file_get_contents('/path/to/invoice.pdf'))
+        ],
+        [
+            'name' => 'report.csv',
+            'content' => base64_encode(file_get_contents('/path/to/report.csv'))
+        ]
+    ]
+]);
+
+// Response includes message_id and tracking_id
+echo "Message ID: " . $result['message_id'];
+echo "Tracking ID: " . $result['tracking_id'];
+
+// Send to multiple recipients
+$result = $client->email()->send([
+    'to' => ['user1@example.com', 'user2@example.com'],
+    'subject' => 'Team update',
+    'html' => '<p>Here is the latest update.</p>'
+]);
+
+// Get SES send quota
+$quota = $client->email()->quota();
+echo "Remaining: " . $quota['remaining'];
+echo "Max 24h: " . $quota['max_24_hour_send'];
+echo "Utilization: " . $quota['utilization_percent'] . "%";
+
+// Get verified emails
+$verified = $client->email()->verifiedEmails();
+
+// Verify a new email address
+$result = $client->email()->verifyEmail('new@example.com');
+```
+
 ## Error Handling
 
 ```php
@@ -494,6 +545,6 @@ MIT License
 
 ## Support
 
-- Documentation: https://docs.kirimel.com
+- Documentation: https://kirimel.com/api-docs
 - GitHub: https://github.com/hualiglobal/kirimel-php-sdk
 - Issues: https://github.com/hualiglobal/kirimel-php-sdk/issues
