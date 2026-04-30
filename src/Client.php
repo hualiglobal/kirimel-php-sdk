@@ -25,6 +25,7 @@ class Client
     private ?Resources\LandingPages $landingPages = null;
     private ?Resources\Workflows $workflows = null;
     private ?Resources\Webhooks $webhooks = null;
+    private ?Resources\Email $email = null;
 
     /**
      * Create a new API client
@@ -166,6 +167,17 @@ class Client
             $this->webhooks = new Resources\Webhooks($this->httpClient);
         }
         return $this->webhooks;
+    }
+
+    /**
+     * Get email resource client for transactional emails
+     */
+    public function email(): Resources\Email
+    {
+        if ($this->email === null) {
+            $this->email = new Resources\Email($this->httpClient);
+        }
+        return $this->email;
     }
 
     /**
