@@ -50,6 +50,17 @@ class Customers
     }
 
     /**
+     * Look up customer by email address
+     *
+     * @param string $email Customer email address
+     * @return array
+     */
+    public function lookupByEmail(string $email): array
+    {
+        return $this->httpClient->get('api/loyalty/customers/lookup-by-email', ['email' => $email]);
+    }
+
+    /**
      * Get customer profile by ID
      *
      * @param string|int $customerId Customer ID
