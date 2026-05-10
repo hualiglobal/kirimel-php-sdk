@@ -1,6 +1,15 @@
 # KiriMel PHP SDK
 
-Official PHP SDK for KiriMel Email Marketing API.
+Official PHP SDK for KiriMel Email Marketing API & Loyalty API.
+
+## Features
+
+- **Email API**: Manage campaigns, subscribers, lists, templates, forms, workflows & more
+- **Loyalty API**: Customer loyalty with points, vouchers, tiers, and wallet management
+- **Unified Client**: Single SDK for both APIs with different authentication methods
+- **Type Safe**: Full type hints for PHP 8.1+
+- **Retry Logic**: Built-in exponential backoff for failed requests
+- **PSR-3 Logging**: Optional logging support
 
 ## Installation
 
@@ -17,7 +26,7 @@ require 'vendor/autoload.php';
 
 use KiriMel\Client;
 
-// Initialize the client
+// Initialize the client with Email API credentials
 $client = new Client([
     'api_key' => 'sk_test_xxx', // Or set KIRIMEL_API_KEY env variable
     'base_url' => 'https://kirimel.com/api',
@@ -25,25 +34,57 @@ $client = new Client([
     'retries' => 3
 ]);
 
-// List campaigns
+// List campaigns (Email API)
 $campaigns = $client->campaigns->list([
     'status' => 'sent',
     'limit' => 20
 ]);
 
-// Create a campaign
-$campaign = $client->campaigns->create([
-    'name' => 'Welcome Email',
-    'subject' => 'Welcome to KiriMel!',
-    'list_id' => 123,
-    'template_id' => 456
+// Register loyalty customer (Loyalty API - requires client_key and client_secret)
+$customer = $client->loyaltyCustomers()->register([
+    'phone' => '+60123456789',
+    'name' => 'John Doe',
+    'email' => 'john@example.com'
 ]);
 
-// Get campaign statistics
-$stats = $client->campaigns->stats($campaign['id']);
+// Award points (Loyalty API)
+$points = $client->loyaltyPoints()->earn([
+    'customer_id' => $customer['data']['id'],
+    'points' => 100,
+    'reference' => 'PURCHASE_123',
+    'description' => 'Purchase reward'
+]);
 ```
 
 ## Authentication
+
+The SDK supports **two different authentication methods** for the two APIs:
+
+### Email API (Simple API Key)
+
+```php
+// Method 1: API Key
+$client = new Client(['api_key' => 'sk_test_xxx']);
+
+// Method 2: Environment variable
+// Set KIRIMEL_API_KEY=sk_test_xxx in your environment
+$client = new Client();
+```
+
+### Loyalty API (HMAC SHA256 Signature)
+
+```php
+// Requires both client_key and client_secret
+$client = new Client([
+    // Email API credentials (required)
+    'api_key' => 'sk_test_xxx',
+    // Loyalty API credentials (optional - only if using loyalty features)
+    'client_key' => 'cli_test_xxx',        // Or KIRIMEL_LOYALTY_CLIENT_KEY env var
+    'client_secret' => 'your_secret_here'  // Or KIRIMEL_LOYALTY_CLIENT_SECRET env var
+]);
+```
+
+**Note:** Loyalty API uses HMAC SHA256 signature authentication for security. The SDK handles this automatically when you provide `client_key` and `client_secret`.
 
 The SDK supports two authentication methods:
 
@@ -487,6 +528,134 @@ $verified = $client->email()->verifiedEmails();
 
 // Verify a new email address
 $result = $client->email()->verifyEmail('new@example.com');
+```
+
+## Loyalty API
+
+The Loyalty API uses HMAC SHA256 signature authentication for secure POS integration. The SDK handles signature calculation automatically.
+
+### Customers
+
+```php
+// Register a new customer
+$customer = $client->loyaltyCustomers()->register([
+    'phone' => '+60123456789',
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'birth_date' => '1990-05-15', // Optional
+    'qr_code' => 'CUSTOMER_123'  // Optional
+]);
+
+// Look up customer by phone
+$customer = $client->loyaltyCustomers()->lookup([
+    'phone' => '+60123456789'
+]);
+
+// Get customer profile
+$profile = $client->loyaltyCustomers()->get($customerId);
+
+// Get customer transactions
+$transactions = $client->loyaltyCustomers()->transactions($customerId);
+
+// Manually adjust points
+$adjustment = $client->loyaltyCustomers()->adjust($customerId, [
+    'points' => 50,
+    'reference' => 'MANUAL_ADJUST_001',
+    'description' => 'Goodwill gesture',
+    'adjusted_by' => 'Admin'
+]);
+
+// Get customer tier
+$tier = $client->loyaltyCustomers()->tier($customerId);
+
+// List customers
+$customers = $client->loyaltyCustomers()->list([
+    'page' => 1,
+    'per_page' => 50,
+    'tier' => 'gold'
+]);
+```
+
+### Points & Wallet
+
+```php
+// Award points
+$earn = $client->loyaltyPoints()->earn([
+    'customer_id' => $customerId,
+    'points' => 100,
+    'amount' => 50.50,
+    'reference_id' => 'ORDER_123',
+    'description' => 'Purchase reward'
+]);
+
+// Preview redemption (check before confirming)
+$preview = $client->loyaltyPoints()->previewRedeem([
+    'customer_id' => $customerId,
+    'points_to_redeem' => 100
+]);
+// Returns: points_value, max_redeemable, amount_discount
+
+// Confirm redemption
+$redeem = $client->loyaltyPoints()->commitRedeem([
+    'customer_id' => $customerId,
+    'points_to_redeem' => 100,
+    'reference_id' => 'BILL_456'
+]);
+
+// Reverse transaction (if needed)
+$reverse = $client->loyaltyPoints()->reverse([
+    'transaction_id' => $transactionId,
+    'reason' => 'Customer return',
+    'reference_id' => 'RETURN_123'
+]);
+
+// Get wallet balance
+$balance = $client->loyaltyWallet()->balance([
+    'customer_id' => $customerId
+]);
+
+// Recalculate balance from ledger
+$recalc = $client->loyaltyWallet()->recalculate([
+    'customer_id' => $customerId
+]);
+```
+
+### Vouchers
+
+```php
+// Create voucher batch
+$batch = $client->loyaltyVouchers()->createBatch([
+    'name' => 'Grand Opening Promo',
+    'type' => 'PERCENT', // or 'FIXED'
+    'value' => 10,
+    'quantity' => 100,
+    'valid_from' => '2024-06-01',
+    'valid_until' => '2024-12-31',
+    'min_purchase' => 50.00,
+    'max_discount' => 25.00
+]);
+
+// List voucher batches
+$batches = $client->loyaltyVouchers()->listBatches();
+
+// Issue voucher to customer
+$issue = $client->loyaltyVouchers()->issue([
+    'voucher_batch_id' => $batchId,
+    'customer_id' => $customerId,
+    'delivered_via' => 'email', // or 'sms'
+    'reference_id' => 'PROMO_001'
+]);
+
+// Redeem voucher
+$redeem = $client->loyaltyVouchers()->redeem([
+    'code' => 'VOUCHER_A1B2C3D4E5F6',
+    'customer_id' => $customerId,
+    'purchase_amount' => 75.00,
+    'reference_id' => 'ORDER_789'
+]);
+
+// Get voucher details
+$voucher = $client->loyaltyVouchers()->get('VOUCHER_A1B2C3D4E5F6');
 ```
 
 ## Error Handling

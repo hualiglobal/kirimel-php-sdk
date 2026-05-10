@@ -12,9 +12,10 @@ namespace KiriMel;
 class Client
 {
     private HttpClient $httpClient;
+    private ?LoyaltyHttpClient $loyaltyHttpClient = null;
     private array $resourceClients = [];
 
-    // Resource clients
+    // Resource clients (Email API)
     private ?Resources\Campaigns $campaigns = null;
     private ?Resources\Subscribers $subscribers = null;
     private ?Resources\Lists $lists = null;
@@ -26,6 +27,12 @@ class Client
     private ?Resources\Workflows $workflows = null;
     private ?Resources\Webhooks $webhooks = null;
     private ?Resources\Email $email = null;
+
+    // Resource clients (Loyalty API)
+    private ?Resources\Loyalty\Customers $loyaltyCustomers = null;
+    private ?Resources\Loyalty\Points $loyaltyPoints = null;
+    private ?Resources\Loyalty\Vouchers $loyaltyVouchers = null;
+    private ?Resources\Loyalty\Wallet $loyaltyWallet = null;
 
     /**
      * Create a new API client
@@ -178,6 +185,74 @@ class Client
             $this->email = new Resources\Email($this->httpClient);
         }
         return $this->email;
+    }
+
+    /**
+     * Get loyalty API client (factory method)
+     *
+     * Requires client_key and client_secret in config or use KIRIMEL_LOYALTY_CLIENT_KEY env var
+     */
+    public function loyalty(): self
+    {
+        if ($this->loyaltyHttpClient === null) {
+            $config = [
+                'base_url' => 'https://kirimel.com',
+                'client_key' => $_ENV['KIRIMEL_LOYALTY_CLIENT_KEY'] ?? null,
+                'client_secret' => $_ENV['KIRIMEL_LOYALTY_CLIENT_SECRET'] ?? null,
+                'timeout' => 30,
+                'retries' => 3,
+            ];
+            $this->loyaltyHttpClient = new LoyaltyHttpClient($config);
+        }
+        return $this;
+    }
+
+    /**
+     * Get loyalty customers resource client
+     */
+    public function loyaltyCustomers(): Resources\Loyalty\Customers
+    {
+        $this->loyalty();
+        if ($this->loyaltyCustomers === null) {
+            $this->loyaltyCustomers = new Resources\Loyalty\Customers($this->loyaltyHttpClient);
+        }
+        return $this->loyaltyCustomers;
+    }
+
+    /**
+     * Get loyalty points resource client
+     */
+    public function loyaltyPoints(): Resources\Loyalty\Points
+    {
+        $this->loyalty();
+        if ($this->loyaltyPoints === null) {
+            $this->loyaltyPoints = new Resources\Loyalty\Points($this->loyaltyHttpClient);
+        }
+        return $this->loyaltyPoints;
+    }
+
+    /**
+     * Get loyalty vouchers resource client
+     */
+    public function loyaltyVouchers(): Resources\Loyalty\Vouchers
+    {
+        $this->loyalty();
+        if ($this->loyaltyVouchers === null) {
+            $this->loyaltyVouchers = new Resources\Loyalty\Vouchers($this->loyaltyHttpClient);
+        }
+        return $this->loyaltyVouchers;
+    }
+
+    /**
+     * Get loyalty wallet resource client
+     */
+    public function loyaltyWallet(): Resources\Loyalty\Wallet
+    {
+        $this->loyalty();
+        if ($this->loyaltyWallet === null) {
+            $this->loyaltyWallet = new Resources\Loyalty\Wallet($this->loyaltyHttpClient);
+        }
+        return $this->loyaltyWallet;
     }
 
     /**
