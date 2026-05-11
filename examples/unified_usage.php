@@ -16,8 +16,8 @@ $client = new Client([
     'api_key' => getenv('KIRIMEL_API_KEY') ?: 'your_email_api_key_here',
 
     // Loyalty API credentials (optional - only if using loyalty features)
-    'client_key' => getenv('KIRIMEL_LOYALTY_CLIENT_KEY') ?: 'your_client_key_here',
-    'client_secret' => getenv('KIRIMEL_LOYALTY_CLIENT_SECRET') ?: 'your_client_secret_here',
+    'api_key' => getenv('KIRIMEL_LOYALTY_API_KEY') ?: 'your_api_key_here',
+    'key_secret' => getenv('KIRIMEL_LOYALTY_KEY_SECRET') ?: 'your_key_secret_here',
 ]);
 
 // ============================================================

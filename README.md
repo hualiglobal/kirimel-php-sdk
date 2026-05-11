@@ -40,7 +40,7 @@ $campaigns = $client->campaigns->list([
     'limit' => 20
 ]);
 
-// Register loyalty customer (Loyalty API - requires client_key and client_secret)
+// Register loyalty customer (Loyalty API - requires api_key and key_secret)
 $customer = $client->loyaltyCustomers()->register([
     'phone' => '+60123456789',
     'name' => 'John Doe',
@@ -74,17 +74,17 @@ $client = new Client();
 ### Loyalty API (HMAC SHA256 Signature)
 
 ```php
-// Requires both client_key and client_secret
+// Requires both api_key and key_secret
 $client = new Client([
     // Email API credentials (required)
     'api_key' => 'sk_test_xxx',
     // Loyalty API credentials (optional - only if using loyalty features)
-    'client_key' => 'cli_test_xxx',        // Or KIRIMEL_LOYALTY_CLIENT_KEY env var
-    'client_secret' => 'your_secret_here'  // Or KIRIMEL_LOYALTY_CLIENT_SECRET env var
+    'api_key' => 'cli_test_xxx',        // Or KIRIMEL_LOYALTY_API_KEY env var
+    'key_secret' => 'your_secret_here'  // Or KIRIMEL_LOYALTY_KEY_SECRET env var
 ]);
 ```
 
-**Note:** Loyalty API uses HMAC SHA256 signature authentication for security. The SDK handles this automatically when you provide `client_key` and `client_secret`.
+**Note:** Loyalty API uses HMAC SHA256 signature authentication for security. The SDK handles this automatically when you provide `api_key` and `key_secret`.
 
 The SDK supports two authentication methods:
 

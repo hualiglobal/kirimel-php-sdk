@@ -15,8 +15,8 @@ use KiriMel\Exceptions\ValidationException;
 class LoyaltyHttpClient
 {
     private string $baseUrl;
-    private ?string $clientKey;
-    private ?string $clientSecret;
+    private ?string $apiKey;
+    private ?string $keySecret;
     private int $timeout;
     private int $retries;
     private ?object $logger = null;
@@ -24,8 +24,8 @@ class LoyaltyHttpClient
     public function __construct(array $config = [])
     {
         $this->baseUrl = rtrim($config['base_url'] ?? 'https://kirimel.com', '/');
-        $this->clientKey = $config['client_key'] ?? null;
-        $this->clientSecret = $config['client_secret'] ?? null;
+        $this->apiKey = $config['api_key'] ?? null;
+        $this->keySecret = $config['key_secret'] ?? null;
         $this->timeout = $config['timeout'] ?? 30;
         $this->retries = $config['retries'] ?? 3;
         $this->logger = $config['logger'] ?? null;
@@ -97,7 +97,7 @@ class LoyaltyHttpClient
     private function calculateSignature(string $timestamp, string $payload): string
     {
         $signingString = $timestamp . '.' . $payload;
-        return hash_hmac('sha256', $signingString, $this->clientSecret);
+        return hash_hmac('sha256', $signingString, $this->keySecret);
     }
 
     /**
@@ -113,7 +113,7 @@ class LoyaltyHttpClient
             'Content-Type: application/json',
             'Accept: application/json',
             'User-Agent: KiriMel-PHP-SDK/2.0.0',
-            'X-Client-Key: ' . $this->clientKey,
+            'X-API-Key: ' . $this->apiKey,
             'X-Timestamp: ' . $timestamp,
             'X-Signature: ' . $signature,
         ];

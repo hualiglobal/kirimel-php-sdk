@@ -18,8 +18,8 @@ use PHPUnit\Framework\TestCase;
  *   KIRIMEL_API_KEY=your_email_api_key
  *
  * For Loyalty API:
- *   KIRIMEL_LOYALTY_CLIENT_KEY=your_client_key
- *   KIRIMEL_LOYALTY_CLIENT_SECRET=your_client_secret
+ *   KIRIMEL_LOYALTY_API_KEY=your_api_key
+ *   KIRIMEL_LOYALTY_KEY_SECRET=your_key_secret
  */
 class ApiIntegrationTest extends TestCase
 {
@@ -28,8 +28,8 @@ class ApiIntegrationTest extends TestCase
     protected function setUp(): void
     {
         $apiKey = $_ENV['KIRIMEL_API_KEY'] ?? null;
-        $loyaltyClientKey = $_ENV['KIRIMEL_LOYALTY_CLIENT_KEY'] ?? null;
-        $loyaltyClientSecret = $_ENV['KIRIMEL_LOYALTY_CLIENT_SECRET'] ?? null;
+        $loyaltyApiKey = $_ENV['KIRIMEL_LOYALTY_API_KEY'] ?? null;
+        $loyaltyKeySecret = $_ENV['KIRIMEL_LOYALTY_KEY_SECRET'] ?? null;
 
         if (!$apiKey) {
             $this->markTestSkipped('KIRIMEL_API_KEY environment variable not set');
@@ -37,9 +37,9 @@ class ApiIntegrationTest extends TestCase
 
         $config = ['api_key' => $apiKey];
 
-        if ($loyaltyClientKey && $loyaltyClientSecret) {
-            $config['client_key'] = $loyaltyClientKey;
-            $config['client_secret'] = $loyaltyClientSecret;
+        if ($loyaltyApiKey && $loyaltyKeySecret) {
+            $config['api_key'] = $loyaltyApiKey;
+            $config['key_secret'] = $loyaltyKeySecret;
         }
 
         $this->client = new Client($config);
@@ -83,8 +83,8 @@ class ApiIntegrationTest extends TestCase
      */
     public function testLoyaltyApiCustomerLookup(): void
     {
-        if (!$_ENV['KIRIMEL_LOYALTY_CLIENT_KEY'] ?? null) {
-            $this->markTestSkipped('KIRIMEL_LOYALTY_CLIENT_KEY not set');
+        if (!$_ENV['KIRIMEL_LOYALTY_API_KEY'] ?? null) {
+            $this->markTestSkipped('KIRIMEL_LOYALTY_API_KEY not set');
         }
 
         // Try to lookup a customer (will return 404 if not found, but proves auth works)
@@ -105,8 +105,8 @@ class ApiIntegrationTest extends TestCase
      */
     public function testLoyaltyApiWalletBalance(): void
     {
-        if (!$_ENV['KIRIMEL_LOYALTY_CLIENT_KEY'] ?? null) {
-            $this->markTestSkipped('KIRIMEL_LOYALTY_CLIENT_KEY not set');
+        if (!$_ENV['KIRIMEL_LOYALTY_API_KEY'] ?? null) {
+            $this->markTestSkipped('KIRIMEL_LOYALTY_API_KEY not set');
         }
 
         try {
@@ -125,8 +125,8 @@ class ApiIntegrationTest extends TestCase
      */
     public function testLoyaltyHmacSignatureCalculation(): void
     {
-        if (!$_ENV['KIRIMEL_LOYALTY_CLIENT_KEY'] ?? null) {
-            $this->markTestSkipped('KIRIMEL_LOYALTY_CLIENT_KEY not set');
+        if (!$_ENV['KIRIMEL_LOYALTY_API_KEY'] ?? null) {
+            $this->markTestSkipped('KIRIMEL_LOYALTY_API_KEY not set');
         }
 
         // This test verifies HMAC signature is being calculated correctly

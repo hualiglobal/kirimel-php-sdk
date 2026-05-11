@@ -190,15 +190,15 @@ class Client
     /**
      * Get loyalty API client (factory method)
      *
-     * Requires client_key and client_secret in config or use KIRIMEL_LOYALTY_CLIENT_KEY env var
+     * Requires api_key and key_secret in config or use KIRIMEL_LOYALTY_API_KEY env var
      */
     public function loyalty(): self
     {
         if ($this->loyaltyHttpClient === null) {
             $config = [
                 'base_url' => 'https://kirimel.com',
-                'client_key' => $_ENV['KIRIMEL_LOYALTY_CLIENT_KEY'] ?? null,
-                'client_secret' => $_ENV['KIRIMEL_LOYALTY_CLIENT_SECRET'] ?? null,
+                'api_key' => $_ENV['KIRIMEL_LOYALTY_API_KEY'] ?? null,
+                'key_secret' => $_ENV['KIRIMEL_LOYALTY_KEY_SECRET'] ?? null,
                 'timeout' => 30,
                 'retries' => 3,
             ];
