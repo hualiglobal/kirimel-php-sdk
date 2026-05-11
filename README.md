@@ -74,17 +74,15 @@ $client = new Client();
 ### Loyalty API (HMAC SHA256 Signature)
 
 ```php
-// Requires both api_key and key_secret
-$client = new Client([
-    // Email API credentials (required)
-    'api_key' => 'sk_test_xxx',
-    // Loyalty API credentials (optional - only if using loyalty features)
-    'api_key' => 'cli_test_xxx',        // Or KIRIMEL_LOYALTY_API_KEY env var
-    'key_secret' => 'your_secret_here'  // Or KIRIMEL_LOYALTY_KEY_SECRET env var
-]);
+// Recommended: Use environment variables
+// Set these in your environment:
+//   KIRIMEL_API_KEY=sk_test_xxx              (Email API key)
+//   KIRIMEL_LOYALTY_API_KEY=kl_test_xxx      (Loyalty API key)
+//   KIRIMEL_LOYALTY_KEY_SECRET=your_secret  (Loyalty key secret)
+$client = new Client();
 ```
 
-**Note:** Loyalty API uses HMAC SHA256 signature authentication for security. The SDK handles this automatically when you provide `api_key` and `key_secret`.
+**Note:** Loyalty API uses HMAC SHA256 signature authentication with a different API key format (starts with `kl_` instead of `sk_`). The SDK handles signature calculation automatically when you provide the loyalty credentials via environment variables.
 
 The SDK supports two authentication methods:
 
